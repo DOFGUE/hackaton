@@ -22,6 +22,14 @@ public class validacion {
 		this.tipoValidacion = tipoValidacion;
 	}
 	
+	public Long getIdValidacion() {
+		return idValidacion;
+	}
+	
+	public void setIdValidacion(Long idValidacion) {
+		this.idValidacion = idValidacion;
+	}
+	
 	public String getTipoValidacion() {
 		return tipoValidacion;
 	}

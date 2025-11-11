@@ -85,6 +85,37 @@ public class requerimientoService {
 							&& !requerimientoActualizado.getFechaSolicitud().isEmpty()) {
 						requerimiento.setFechaSolicitud(requerimientoActualizado.getFechaSolicitud());
 					}
+					
+					// Actualizar estados
+					if (requerimientoActualizado.getEstados() != null && !requerimientoActualizado.getEstados().isEmpty()) {
+						requerimiento.setEstados(requerimientoActualizado.getEstados());
+					}
+					
+					// Actualizar solicitantes
+					if (requerimientoActualizado.getSolicitantes() != null && !requerimientoActualizado.getSolicitantes().isEmpty()) {
+						requerimiento.setSolicitantes(requerimientoActualizado.getSolicitantes());
+					}
+					
+					// Actualizar categorías
+					if (requerimientoActualizado.getCategorias() != null && !requerimientoActualizado.getCategorias().isEmpty()) {
+						requerimiento.setCategorias(requerimientoActualizado.getCategorias());
+					}
+					
+					// Actualizar validaciones
+					if (requerimientoActualizado.getValidaciones() != null && !requerimientoActualizado.getValidaciones().isEmpty()) {
+						requerimiento.setValidaciones(requerimientoActualizado.getValidaciones());
+					}
+					
+					// Actualizar porcentaje de progreso
+					if (requerimientoActualizado.getPorcentajeProgreso() != null) {
+						requerimiento.setPorcentajeProgreso(requerimientoActualizado.getPorcentajeProgreso());
+					}
+					
+					// Actualizar observaciones
+					if (requerimientoActualizado.getObservaciones() != null) {
+						requerimiento.setObservaciones(requerimientoActualizado.getObservaciones());
+					}
+					
 					return repositorioRequerimiento.save(requerimiento);
 				})
 				.orElseThrow(() -> new IllegalArgumentException("Requerimiento no encontrado con ID: " + id));

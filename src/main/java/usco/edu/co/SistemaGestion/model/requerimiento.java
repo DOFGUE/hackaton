@@ -12,7 +12,7 @@ public class requerimiento {
 	@Column(name = "idRequerimiento")
 	private Long idRequerimiento;
 	
-	@ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+	@ManyToMany(cascade = {CascadeType.MERGE})
 	@JoinTable(
 		name = "requerimientos_categorias",
 		joinColumns = @JoinColumn(name = "idRequerimiento"),
@@ -32,7 +32,7 @@ public class requerimiento {
 	@Column(nullable = false)
 	private String fechaSolicitud;
 	
-	@ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+	@ManyToMany(cascade = {CascadeType.MERGE})
 	@JoinTable(
 		name = "requerimientos_usuarios",
 		joinColumns = @JoinColumn(name = "idRequerimiento"),
@@ -41,7 +41,7 @@ public class requerimiento {
 	
 	private Set<usuario> solicitantes = new java.util.HashSet<>();
 	
-	@ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+	@ManyToMany(cascade = {CascadeType.MERGE})
 	@JoinTable(
 		name = "requerimientos_validaciones",
 		joinColumns = @JoinColumn(name = "idRequerimiento"),
@@ -50,7 +50,7 @@ public class requerimiento {
 	
 	private Set<validacion> validaciones = new java.util.HashSet<>();
 	
-	@ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+	@ManyToMany(cascade = {CascadeType.MERGE})
 	@JoinTable(
 		name = "requerimientos_estados",
 		joinColumns = @JoinColumn(name = "idRequerimiento"),
@@ -58,6 +58,12 @@ public class requerimiento {
 	)
 	
 	private Set<estado> estados = new java.util.HashSet<>();
+	
+	@Column(name = "porcentajeProgreso", nullable = true)
+	private Integer porcentajeProgreso = 0;
+	
+	@Column(name = "observaciones", nullable = true, columnDefinition = "TEXT")
+	private String observaciones;
 	
 	
 	public requerimiento() {}
@@ -136,5 +142,21 @@ public class requerimiento {
 	
 	public void setCategorias(Set<categoria> categorias) {
 		this.categorias = categorias;
+	}
+	
+	public Integer getPorcentajeProgreso() {
+		return porcentajeProgreso;
+	}
+	
+	public void setPorcentajeProgreso(Integer porcentajeProgreso) {
+		this.porcentajeProgreso = porcentajeProgreso;
+	}
+	
+	public String getObservaciones() {
+		return observaciones;
+	}
+	
+	public void setObservaciones(String observaciones) {
+		this.observaciones = observaciones;
 	}
 }

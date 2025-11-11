@@ -21,6 +21,14 @@ public class estado {
 		this.nombreEstado = nombreEstado;
 	}
 	
+	public Long getIdEstado() {
+		return idEstado;
+	}
+	
+	public void setIdEstado(Long idEstado) {
+		this.idEstado = idEstado;
+	}
+	
 	public String getNombreEstado() {
 		return nombreEstado;
 	}

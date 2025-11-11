@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity6" lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Sistema de Gestión</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="/dashboard">
+                <i class="bi bi-diagram-3"></i> Sistema Gestión
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <span class="navbar-text text-white me-3">
+                            <i class="bi bi-person-circle"></i> <span sec:authentication="name"></span>
+                        </span>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/logout" onclick="return confirm('¿Desea cerrar sesión?')">
+                            <i class="bi bi-box-arrow-right"></i> Salir
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container-fluid mt-5">
+        <div class="row">
+            <div class="col-md-12">
+                <h1 class="mb-4">
+                    <i class="bi bi-speedometer2"></i> Dashboard
+                </h1>
+            </div>
+        </div>
+
+        <!-- Roles Cards -->
+        <div class="row g-4">
+            <!-- Solicitante -->
+            <div sec:authorize="hasAnyRole('SOLICITANTE', 'DOCENTE', 'FUNCIONARIO', 'ESTUDIANTE_AUTORIZADO')" class="col-md-6 col-lg-3">
+                <div class="card border-primary h-100">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div>
+                                <h5 class="card-title">
+                                    <i class="bi bi-file-earmark-text text-primary"></i> Solicitante
+                                </h5>
+                                <p class="card-text text-muted">Gestiona tus requerimientos</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-footer bg-transparent">
+                        <a href="/solicitante" class="btn btn-sm btn-primary w-100">
+                            <i class="bi bi-arrow-right"></i> Ir al Panel
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Oficina de Mantenimiento -->
+            <div sec:authorize="hasRole('OFICINA_MANTENIMIENTO')" class="col-md-6 col-lg-3">
+                <div class="card border-success h-100">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div>
+                                <h5 class="card-title">
+                                    <i class="bi bi-tools text-success"></i> Oficina Mantenimiento
+                                </h5>
+                                <p class="card-text text-muted">Gestiona los requerimientos</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-footer bg-transparent">
+                        <a href="/oficina-mantenimiento" class="btn btn-sm btn-success w-100">
+                            <i class="bi bi-arrow-right"></i> Ir al Panel
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Jefe Programador -->
+            <div sec:authorize="hasRole('JEFE_PROGRAMADOR_MANTENIMIENTO')" class="col-md-6 col-lg-3">
+                <div class="card border-warning h-100">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div>
+                                <h5 class="card-title">
+                                    <i class="bi bi-person-badge text-warning"></i> Jefe Programador
+                                </h5>
+                                <p class="card-text text-muted">Asigna tareas a operarios</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-footer bg-transparent">
+                        <a href="/jefe-programador-mantenimiento" class="btn btn-sm btn-warning w-100">
+                            <i class="bi bi-arrow-right"></i> Ir al Panel
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Operario -->
+            <div sec:authorize="hasRole('OPERARIO')" class="col-md-6 col-lg-3">
+                <div class="card border-danger h-100">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div>
+                                <h5 class="card-title">
+                                    <i class="bi bi-hammer text-danger"></i> Operario
+                                </h5>
+                                <p class="card-text text-muted">Ejecuta tareas asignadas</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-footer bg-transparent">
+                        <a href="/operario" class="btn btn-sm btn-danger w-100">
+                            <i class="bi bi-arrow-right"></i> Ir al Panel
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Info Cards -->
+        <div class="row g-4 mt-4">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-header bg-light">
+                        <h5 class="mb-0">
+                            <i class="bi bi-info-circle"></i> Información del Sistema
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <p class="text-muted">
+                            Bienvenido al Sistema de Gestión de Requerimientos. Selecciona tu rol en los paneles superiores 
+                            para acceder a las funcionalidades disponibles.
+                        </p>
+                        <ul class="list-group">
+                            <li class="list-group-item">
+                                <strong>Usuario autenticado:</strong> <span sec:authentication="name"></span>
+                            </li>
+                            <li class="list-group-item">
+                                <strong>Roles:</strong> <span sec:authentication="authorities"></span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-light py-4 mt-5 border-top">
+        <div class="container-fluid text-center text-muted">
+            <p>&copy; 2024 Sistema de Gestión de Requerimientos. Todos los derechos reservados.</p>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

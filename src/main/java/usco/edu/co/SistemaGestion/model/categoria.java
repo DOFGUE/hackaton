@@ -21,6 +21,14 @@ public class categoria {
 		this.nombreCategoria = nombreCategoria;
 	}
 	
+	public Long getIdCategoria() {
+		return idCategoria;
+	}
+	
+	public void setIdCategoria(Long idCategoria) {
+		this.idCategoria = idCategoria;
+	}
+	
 	public String getNombreCategoria() {
 		return nombreCategoria;
 	}

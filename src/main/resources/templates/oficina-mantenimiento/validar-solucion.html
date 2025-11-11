@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity6" lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Validar Solución - Oficina de Mantenimiento</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-success">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="/dashboard">
+                <i class="bi bi-diagram-3"></i> Sistema Gestión
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/oficina-mantenimiento">
+                            <i class="bi bi-speedometer2"></i> Dashboard
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="/oficina-mantenimiento/solucionados">
+                            <i class="bi bi-check-circle"></i> Solucionados
+                        </a>
+                    </li>
+                </ul>
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <span class="navbar-text text-white me-3">
+                            <i class="bi bi-person-circle"></i> <span sec:authentication="name"></span>
+                        </span>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/logout" onclick="return confirm('¿Desea cerrar sesión?')">
+                            <i class="bi bi-box-arrow-right"></i> Salir
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container-fluid mt-4">
+        <div class="row mb-4">
+            <div class="col-md-12">
+                <div class="d-flex justify-content-between align-items-center">
+                    <h1>
+                        <i class="bi bi-clipboard-check"></i> Validar Solución del Requerimiento
+                    </h1>
+                    <a href="/oficina-mantenimiento/solucionados" class="btn btn-outline-secondary">
+                        <i class="bi bi-arrow-left"></i> Volver
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-8 mx-auto">
+                <!-- Información del Requerimiento -->
+                <div class="card mb-4">
+                    <div class="card-header bg-info text-white">
+                        <h5 class="mb-0">
+                            <i class="bi bi-file-text"></i> Información del Requerimiento
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">ID Requerimiento:</label>
+                                <p class="text-muted" th:text="${requerimiento.idRequerimiento}"></p>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">Estado Actual:</label>
+                                <p>
+                                    <span class="badge bg-warning text-dark">
+                                        <i class="bi bi-hourglass-split"></i> SOLUCIONADO
+                                    </span>
+                                </p>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Descripción:</label>
+                            <p class="text-muted" th:text="${requerimiento.descripcionRequerimiento}"></p>
+                        </div>
+
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">Ubicación:</label>
+                                <p class="text-muted" th:text="${requerimiento.ubicacionRequerimiento}"></p>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">Dependencia:</label>
+                                <p class="text-muted" th:text="${requerimiento.dependenciaRequerimiento}"></p>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">Solicitante:</label>
+                                <p class="text-muted" th:text="${requerimiento.solicitante != null ? requerimiento.solicitante.nombreUsuario : 'Sin asignar'}"></p>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">Operario Asignado:</label>
+                                <p class="text-muted" th:text="${requerimiento.operarioAsignado != null ? requerimiento.operarioAsignado.nombreUsuario : 'Sin asignar'}"></p>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">Fecha Solicitud:</label>
+                                <p class="text-muted" th:text="${requerimiento.fechaSolicitud}"></p>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">Progreso:</label>
+                                <p>
+                                    <div class="progress" style="height: 25px;">
+                                        <div class="progress-bar" role="progressbar" 
+                                            th:style="'width: ' + (${requerimiento.porcentajeProgreso != null ? requerimiento.porcentajeProgreso : 0}) + '%'"
+                                            th:text="${requerimiento.porcentajeProgreso != null ? requerimiento.porcentajeProgreso + '%' : '0%'}">
+                                        </div>
+                                    </div>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Observaciones del Operario -->
+                <div class="card mb-4">
+                    <div class="card-header bg-info text-white">
+                        <h5 class="mb-0">
+                            <i class="bi bi-chat-left-text"></i> Observaciones del Operario
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="alert alert-light border" role="alert">
+                            <p th:if="${requerimiento.observaciones != null and requerimiento.observaciones.length() > 0}" 
+                               th:text="${requerimiento.observaciones}"></p>
+                            <p th:if="${requerimiento.observaciones == null or requerimiento.observaciones.length() == 0}" 
+                               class="text-muted mb-0">Sin observaciones adicionales</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Decisión Final -->
+                <div class="card mb-4">
+                    <div class="card-header bg-warning text-dark">
+                        <h5 class="mb-0">
+                            <i class="bi bi-check-square"></i> Decisión Final
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <p class="mb-4">
+                            <strong>Seleccione si la solución es satisfactoria:</strong>
+                        </p>
+
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <form method="post" th:action="@{/oficina-mantenimiento/cerrar/{id}(id=${requerimiento.idRequerimiento})}"
+                                    onsubmit="return confirm('¿Confirma que la solución es satisfactoria? El requerimiento será marcado como CERRADO.');">
+                                    <button type="submit" class="btn btn-success w-100 btn-lg">
+                                        <i class="bi bi-check-circle"></i> Solución Correcta - Cerrar
+                                    </button>
+                                </form>
+                            </div>
+                            <div class="col-md-6">
+                                <form method="post" th:action="@{/oficina-mantenimiento/reabrir-solucionado/{id}(id=${requerimiento.idRequerimiento})}"
+                                    onsubmit="return confirm('¿Confirma que la solución NO es satisfactoria? El requerimiento será reabierto para ser asignado nuevamente.');">
+                                    <button type="submit" class="btn btn-warning w-100 btn-lg">
+                                        <i class="bi bi-arrow-counterclockwise"></i> Solución Incorrecta - Reabrir
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+
+                        <div class="mt-4 p-3 bg-light border rounded">
+                            <p class="mb-2">
+                                <strong><i class="bi bi-info-circle"></i> Información:</strong>
+                            </p>
+                            <ul class="mb-0 small">
+                                <li><strong>Cerrar:</strong> Marcará el requerimiento como CERRADO y finalizará el proceso.</li>
+                                <li><strong>Reabrir:</strong> Cambiará el estado a EN VALIDACION para que sea reasignado a otro operario.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-light py-4 mt-5 border-top">
+        <div class="container-fluid text-center text-muted">
+            <p>&copy; 2024 Sistema de Gestión de Requerimientos. Todos los derechos reservados.</p>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

@@ -7,6 +7,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -15,10 +16,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.transaction.annotation.Transactional;
 import usco.edu.co.SistemaGestion.repository.usurioRepository;
 import usco.edu.co.SistemaGestion.model.usuario;
 
 @Service
+@Transactional
 public class usuarioService implements UserDetailsService {
 	
 	@Autowired
@@ -28,19 +31,22 @@ public class usuarioService implements UserDetailsService {
 	private PasswordEncoder passwordEncoder;
 	
 	@Override
+	@Transactional(readOnly = true)
 	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 		
 		usuario user = repositorioUsuario.findBynombreUsuario(username)
-				.orElseThrow(() -> new UsernameNotFoundException("User not found: " + username));
+				.orElseThrow(() -> new UsernameNotFoundException("Usuario no encontrado: " + username));
 		
-		// Forzar la carga de roles dentro de la transacción
-		List<GrantedAuthority> authorities = user.getRoles().stream()
-				.map(r -> new SimpleGrantedAuthority("ROLE_" + r.getNombreRol().toUpperCase()))
-				.collect(Collectors.toList());
+		// Cargar roles del usuario
+		List<GrantedAuthority> authorities = new ArrayList<>();
 		
-		// Si no hay roles, asignar un rol por defecto
-		if (authorities.isEmpty()) {
-			authorities.add(new SimpleGrantedAuthority("ROLE_ESTUDIANTE"));
+		if (user.getRoles() != null && !user.getRoles().isEmpty()) {
+			authorities = user.getRoles().stream()
+					.map(r -> new SimpleGrantedAuthority("ROLE_" + r.getNombreRol().toUpperCase()))
+					.collect(Collectors.toList());
+		} else {
+			// Rol por defecto si no hay roles asignados
+			authorities.add(new SimpleGrantedAuthority("ROLE_USER"));
 		}
 		
 		return new org.springframework.security.core.userdetails.User(
@@ -57,8 +63,12 @@ public class usuarioService implements UserDetailsService {
 	/**
 	 * Obtiene el usuario actualmente autenticado
 	 */
+	@Transactional(readOnly = true)
 	public usuario obtenerUsuarioAutenticado() {
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+		if (auth == null || !auth.isAuthenticated()) {
+			return null;
+		}
 		String username = auth.getName();
 		
 		return repositorioUsuario.findBynombreUsuario(username)
@@ -68,6 +78,7 @@ public class usuarioService implements UserDetailsService {
 	/**
 	 * Obtiene todos los usuarios
 	 */
+	@Transactional(readOnly = true)
 	public List<usuario> obtenerTodosUsuarios() {
 		return repositorioUsuario.findAll();
 	}
@@ -75,6 +86,7 @@ public class usuarioService implements UserDetailsService {
 	/**
 	 * Obtiene un usuario por ID
 	 */
+	@Transactional(readOnly = true)
 	public Optional<usuario> obtenerUsuarioPorId(Long id) {
 		return repositorioUsuario.findById(id);
 	}
@@ -82,6 +94,7 @@ public class usuarioService implements UserDetailsService {
 	/**
 	 * Obtiene un usuario por nombre de usuario
 	 */
+	@Transactional(readOnly = true)
 	public Optional<usuario> obtenerUsuarioPorNombre(String nombreUsuario) {
 		return repositorioUsuario.findBynombreUsuario(nombreUsuario);
 	}
@@ -100,11 +113,6 @@ public class usuarioService implements UserDetailsService {
 			nuevoUsuario.setContrasena(passwordEncoder.encode(nuevoUsuario.getContrasena()));
 		}
 		
-		// Usuario habilitado por defecto
-		if (nuevoUsuario.getRoles() == null || nuevoUsuario.getRoles().isEmpty()) {
-			// Se espera que se asignen roles después
-		}
-		
 		return repositorioUsuario.save(nuevoUsuario);
 	}
 	
@@ -115,7 +123,6 @@ public class usuarioService implements UserDetailsService {
 		return repositorioUsuario.findById(id)
 				.map(usuario -> {
 					usuario.setNombreUsuario(usuarioActualizado.getNombreUsuario());
-					// Solo actualizar contraseña si se proporciona una nueva
 					if (usuarioActualizado.getContrasena() != null && !usuarioActualizado.getContrasena().isEmpty()) {
 						usuario.setContrasena(passwordEncoder.encode(usuarioActualizado.getContrasena()));
 					}
@@ -136,29 +143,4 @@ public class usuarioService implements UserDetailsService {
 		}
 		repositorioUsuario.deleteById(id);
 	}
-	
-	/**
-	 * Habilita un usuario
-	 */
-	public usuario habilitarUsuario(Long id) {
-		return repositorioUsuario.findById(id)
-				.map(usuario -> {
-					// Implement enable logic based on your usuario model
-					return repositorioUsuario.save(usuario);
-				})
-				.orElseThrow(() -> new IllegalArgumentException("Usuario no encontrado con ID: " + id));
-	}
-	
-	/**
-	 * Deshabilita un usuario
-	 */
-	public usuario deshabilitarUsuario(Long id) {
-		return repositorioUsuario.findById(id)
-				.map(usuario -> {
-					// Implement disable logic based on your usuario model
-					return repositorioUsuario.save(usuario);
-				})
-				.orElseThrow(() -> new IllegalArgumentException("Usuario no encontrado con ID: " + id));
-	}
-
 }

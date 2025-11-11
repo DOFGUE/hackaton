@@ -1,16 +1,18 @@
 package usco.edu.co.SistemaGestion.model;
 
 import java.util.Set;
+import java.util.HashSet;
 
 import jakarta.persistence.*;
 
 @Entity
 @Table(name = "usuarios")
 public class usuario {
+	
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "idUsuario")
-	private Long idSolicitante;
+	private Long idUsuario;
 	
 	@Column(nullable = false, unique = true, length = 100)
 	private String nombreUsuario;
@@ -18,12 +20,31 @@ public class usuario {
 	@Column(nullable = false)
 	private String contrasena;
 	
+	@Column(nullable = false)
 	private boolean enabled = true;
 	
+	@ManyToMany(fetch = FetchType.EAGER, cascade = {CascadeType.MERGE})
+	@JoinTable(
+		name = "usuarios_roles",
+		joinColumns = @JoinColumn(name = "idUsuario", referencedColumnName = "idUsuario"),
+		inverseJoinColumns = @JoinColumn(name = "idRol", referencedColumnName = "idRol")
+	)
+	private Set<roles> roles = new HashSet<>();
+	
+	// Constructores
 	public usuario() {}
 	
 	public usuario(String nombreUsuario) {
 		this.nombreUsuario = nombreUsuario;
+	}
+	
+	// Getters y Setters
+	public Long getIdUsuario() {
+		return idUsuario;
+	}
+	
+	public void setIdUsuario(Long idUsuario) {
+		this.idUsuario = idUsuario;
 	}
 	
 	public String getNombreUsuario() {
@@ -50,22 +71,6 @@ public class usuario {
 		this.enabled = enabled;
 	}
 	
-	public Long getIdSolicitante() {
-		return idSolicitante;
-	}
-	
-	public void setIdSolicitante(Long idSolicitante) {
-		this.idSolicitante = idSolicitante;
-	}
-	
-	@ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
-	@JoinTable(
-		name = "solicitantes_roles",
-		joinColumns = @JoinColumn(name = "idUsuario"),
-		inverseJoinColumns = @JoinColumn(name = "idRol")
-	)
-	private Set<roles> roles = new java.util.HashSet<>();
-	
 	public Set<roles> getRoles() {
 		return roles;
 	}
@@ -73,6 +78,4 @@ public class usuario {
 	public void setRoles(Set<roles> roles) {
 		this.roles = roles;
 	}
-	
-	
 }

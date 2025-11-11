@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity6" lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tareas Completadas - Oficina de Mantenimiento</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-success">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="/dashboard">
+                <i class="bi bi-diagram-3"></i> Sistema Gestión
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/oficina-mantenimiento">
+                            <i class="bi bi-speedometer2"></i> Dashboard
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/oficina-mantenimiento/requerimientos-pendientes">
+                            <i class="bi bi-list-task"></i> Requerimientos
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="/oficina-mantenimiento/completadas">
+                            <i class="bi bi-check-circle"></i> Completadas
+                        </a>
+                    </li>
+                </ul>
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <span class="navbar-text text-white me-3">
+                            <i class="bi bi-person-circle"></i> <span sec:authentication="name"></span>
+                        </span>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/logout" onclick="return confirm('¿Desea cerrar sesión?')">
+                            <i class="bi bi-box-arrow-right"></i> Salir
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container-fluid mt-4">
+        <!-- Alertas -->
+        <div th:if="${mensaje}" class="alert alert-success alert-dismissible fade show" role="alert">
+            <i class="bi bi-check-circle"></i> <span th:text="${mensaje}"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+        <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class="bi bi-exclamation-circle"></i> <span th:text="${error}"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+
+        <div class="row mb-4">
+            <div class="col-md-12">
+                <div class="d-flex justify-content-between align-items-center">
+                    <h1>
+                        <i class="bi bi-check-circle"></i> Tareas Completadas
+                    </h1>
+                    <a href="/oficina-mantenimiento" class="btn btn-outline-secondary">
+                        <i class="bi bi-arrow-left"></i> Volver
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tabla de tareas completadas -->
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-header bg-light">
+                        <h5 class="mb-0"><i class="bi bi-table"></i> Tareas Completadas - Gestión</h5>
+                    </div>
+                    <div class="card-body">
+                        <div th:if="${requerimientos != null and requerimientos.size() > 0}">
+                            <div class="table-responsive">
+                                <table class="table table-hover">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th><i class="bi bi-hash"></i> ID</th>
+                                            <th><i class="bi bi-file-text"></i> Descripción</th>
+                                            <th><i class="bi bi-hammer"></i> Operario</th>
+                                            <th><i class="bi bi-percent"></i> Progreso</th>
+                                            <th><i class="bi bi-chat-left-text"></i> Observaciones</th>
+                                            <th class="text-center"><i class="bi bi-gear"></i> Acciones</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr th:each="req : ${requerimientos}">
+                                            <td>
+                                                <span class="badge bg-success" th:text="${req.idRequerimiento}"></span>
+                                            </td>
+                                            <td>
+                                                <span th:text="${#strings.abbreviate(req.descripcionRequerimiento, 40)}"></span>
+                                            </td>
+                                            <td>
+                                                <span th:if="${req.solicitantes != null and req.solicitantes.size() > 0}">
+                                                    <span th:each="sol : ${req.solicitantes}" 
+                                                        th:text="${sol.nombreUsuario}"
+                                                        class="badge bg-primary">
+                                                    </span>
+                                                </span>
+                                                <span th:if="${req.solicitantes == null or req.solicitantes.size() == 0}">
+                                                    <span class="badge bg-secondary">Sin asignar</span>
+                                                </span>
+                                            </td>
+                                            <td>
+                                                <div class="progress" style="height: 25px;">
+                                                    <div class="progress-bar bg-success" role="progressbar" 
+                                                        th:style="'width: ' + (${req.porcentajeProgreso != null ? req.porcentajeProgreso : 0}) + '%'"
+                                                        th:text="${req.porcentajeProgreso != null ? req.porcentajeProgreso + '%' : '0%'}">
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <small th:text="${req.observaciones != null and req.observaciones.length() > 0 ? #strings.abbreviate(req.observaciones, 30) : 'Sin observaciones'}"></small>
+                                            </td>
+                                            <td class="text-center">
+                                                <button type="button" class="btn btn-sm btn-warning me-1" data-bs-toggle="modal" 
+                                                    th:data-bs-target="'#reabrirModal' + ${req.idRequerimiento}">
+                                                    <i class="bi bi-arrow-counterclockwise"></i> Reabrir
+                                                </button>
+                                                <button type="button" class="btn btn-sm btn-danger" data-bs-toggle="modal"
+                                                    th:data-bs-target="'#eliminarModal' + ${req.idRequerimiento}">
+                                                    <i class="bi bi-trash"></i> Eliminar
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div th:if="${requerimientos == null or requerimientos.size() == 0}">
+                            <div class="alert alert-info" role="alert">
+                                <i class="bi bi-info-circle"></i> No hay tareas completadas.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modales para Reabrir y Eliminar -->
+    <div th:each="req : ${requerimientos}">
+        <!-- Modal Reabrir -->
+        <div class="modal fade" th:id="'reabrirModal' + ${req.idRequerimiento}" tabindex="-1">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title"><i class="bi bi-arrow-counterclockwise"></i> Reabrir Tarea</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <p>¿Está seguro de que desea reabrir esta tarea?</p>
+                        <p class="text-muted mb-0"><strong>ID:</strong> <span th:text="${req.idRequerimiento}"></span></p>
+                        <p class="text-muted"><strong>Descripción:</strong> <span th:text="${req.descripcionRequerimiento}"></span></p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <form method="post" th:action="@{/oficina-mantenimiento/reabrir/{id}(id=${req.idRequerimiento})}" style="display: inline;">
+                            <button type="submit" class="btn btn-warning">
+                                <i class="bi bi-arrow-counterclockwise"></i> Reabrir
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal Eliminar -->
+        <div class="modal fade" th:id="'eliminarModal' + ${req.idRequerimiento}" tabindex="-1">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header bg-danger">
+                        <h5 class="modal-title text-white"><i class="bi bi-trash"></i> Eliminar Tarea</h5>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <p class="text-danger"><strong>⚠️ Advertencia: Esta acción no se puede deshacer</strong></p>
+                        <p>¿Está seguro de que desea eliminar esta tarea permanentemente?</p>
+                        <p class="text-muted mb-0"><strong>ID:</strong> <span th:text="${req.idRequerimiento}"></span></p>
+                        <p class="text-muted"><strong>Descripción:</strong> <span th:text="${req.descripcionRequerimiento}"></span></p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <form method="post" th:action="@{/oficina-mantenimiento/eliminar/{id}(id=${req.idRequerimiento})}" style="display: inline;">
+                            <button type="submit" class="btn btn-danger">
+                                <i class="bi bi-trash"></i> Eliminar Permanentemente
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-light py-4 mt-5 border-top">
+        <div class="container-fluid text-center text-muted">
+            <p>&copy; 2024 Sistema de Gestión de Requerimientos. Todos los derechos reservados.</p>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
